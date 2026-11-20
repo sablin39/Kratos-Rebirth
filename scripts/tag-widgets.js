@@ -12,48 +12,52 @@ const alertIconMap = {
   warning: "warning",
 };
 
-// 提示横幅 // 参数： 0.类型 1.内容
-hexo.extend.tag.register(
-  "alertbar",
-  (args) =>
-    `<div class="alert alert-${args[0]}">
-  <div class="icon"><i class="fa fa-${alertIconMap[args[0]]}"></i></div>
-  <div class="text">
-  ${hexo.render.renderSync({ text: args[1], engine: "markdown" })}
-  </div>
-  </div>`,
-);
+// 提示横幅 // 参数： 0.类型 其余参数为内容
+hexo.extend.tag.register("alertbar", (args) => {
+  const [type, ...text] = args;
+  return `<div class="alert alert-${type}">
+  <div class="icon"><i class="fa fa-${alertIconMap[type]}"></i></div>
+  <div class="text"><p>${text.join(" ")}</p></div>
+  </div>`;
+});
 
-// 提示面板 // 参数： 0.类型 1.标题 内部内容
+// 提示面板 // 参数： 0.类型 其余参数为标题 内部内容
 hexo.extend.tag.register(
   "alertpanel",
-  (args, content) =>
-    `<div class="panel panel-${args[0]}">
-    <div class="panel-title"><i class="fa fa-${alertIconMap[args[0]]}"></i>${args[1]}</div>
+  (args, content) => {
+    const [type, ...title] = args;
+    return `<div class="panel panel-${type}">
+    <div class="panel-title"><i class="fa fa-${alertIconMap[type]}"></i>${title.join(" ")}</div>
     <div class="panel-body">
-        ${hexo.render.renderSync({ text: content, engine: "markdown" })}
+        ${content}
     </div>
-    </div>`,
+    </div>`;
+  },
   { ends: true },
 );
 
-// 折叠内容 // 参数： 0.标题 1.状态 内部内容
+// 折叠内容 // 参数： 逗号分隔的标题 可选的 open 状态 内部内容
 hexo.extend.tag.register(
   "collapse",
-  (args, content) =>
-    `<div class="collapse-box-control${args[1] === "open" ? " active" : ""}">
-    <div class="collapse-box-header"><div class="collapse-box-icon"><i class="fa fa-plus"></i></div><span>${args[0]}</span></div>
+  (args, content) => {
+    const [title, state] = args
+      .join(" ")
+      .split(",")
+      .map((value) => value.trim());
+    return `<div class="collapse-box-control${state === "open" ? " active" : ""}">
+    <div class="collapse-box-header"><div class="collapse-box-icon"><i class="fa fa-plus"></i></div><span>${title}</span></div>
     <div class="collapse-box-content"><div class="inner">
-        ${hexo.render.renderSync({ text: content, engine: "markdown" })} 
+        ${content}
     </div></div>
-    </div>`,
+    </div>`;
+  },
   { ends: true },
 );
 
 // 模糊隐藏 // 参数： 0.内容
 hexo.extend.tag.register(
   "blur",
-  (args) => `<span class="blur">${args[0]}</span>`,
+  (args) => `<span class="blur">${args.join(" ")}</span>`,
 );
 
 // 链接列表 // 参数： 0.排序依据 (order / random) 1.列表的数据ID（使用来自 data files 的数据时必要）
