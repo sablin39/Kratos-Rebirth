@@ -66,10 +66,4 @@ function inlineMathTitle(title) {
   return output + escapeHTML(title.slice(plainTextStart));
 }
 
-hexo.extend.filter.register('after_post_render', function(data) {
-  if (typeof data.description === 'string' && data.description.includes('$')) {
-    data.description = inlineMathTitle(data.description);
-  }
-});
-
 hexo.extend.helper.register('inline_math_title', inlineMathTitle);
