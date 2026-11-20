@@ -68,10 +68,18 @@
         diagram.innerHTML = svg;
         diagram.dataset.mermaidRendered = "true";
         diagram.classList.remove("mermaid-error");
-        diagram.tabIndex = 0;
-        diagram.setAttribute("role", "button");
-        diagram.setAttribute("aria-label", "Expand interactive diagram");
-        diagram.title = "Click to expand";
+        const wrapper = document.createElement("div");
+        wrapper.className = "mermaid-frame";
+        diagram.replaceWith(wrapper);
+        wrapper.appendChild(diagram);
+        const expandButton = document.createElement("button");
+        expandButton.type = "button";
+        expandButton.className = "mermaid-expand";
+        expandButton.setAttribute("aria-label", "Expand interactive diagram");
+        expandButton.title = "Expand diagram";
+        expandButton.textContent = "⛶";
+        expandButton.addEventListener("click", () => openViewer(diagram));
+        wrapper.appendChild(expandButton);
         bindFunctions?.(diagram);
       } catch (error) {
         diagram.classList.add("mermaid-error");
@@ -83,20 +91,31 @@
   };
 
   let modal;
-  let viewport;
-  let scale = 1;
-  let offsetX = 0;
-  let offsetY = 0;
+  let panZoom;
   let previousFocus;
   let returnFocusOnClose = true;
+  let viewerLoading;
 
-  const updateTransform = () => {
-    if (viewport)
-      viewport.style.transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px)) scale(${scale})`;
+  const loadPanZoom = () => {
+    if (window.svgPanZoom) return Promise.resolve(window.svgPanZoom);
+    if (viewerLoading) return viewerLoading;
+    viewerLoading = new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = `${window.kr.siteRoot}vendors/svg-pan-zoom@3.6.2/dist/svg-pan-zoom.min.js`;
+      script.onload = () => resolve(window.svgPanZoom);
+      script.onerror = () => {
+        viewerLoading = null;
+        reject(new Error("Unable to load SVG pan/zoom"));
+      };
+      document.head.appendChild(script);
+    });
+    return viewerLoading;
   };
 
   const closeViewer = () => {
     if (!modal) return;
+    panZoom?.destroy();
+    panZoom = null;
     modal.classList.remove("active");
     modal.setAttribute("aria-hidden", "true");
     document.body.classList.remove("mermaid-viewer-open");
@@ -104,7 +123,15 @@
     returnFocusOnClose = true;
   };
 
-  const openViewer = (diagram) => {
+  const resetViewer = () => {
+    if (!panZoom) return;
+    panZoom.resize();
+    panZoom.fit();
+    panZoom.center();
+    panZoom.zoom(0.875);
+  };
+
+  const openViewer = async (diagram) => {
     if (!modal) {
       modal = document.createElement("div");
       modal.className = "mermaid-viewer";
@@ -117,14 +144,13 @@
         <div class="mermaid-viewer-dialog">
           <div class="mermaid-viewer-toolbar">
             <button type="button" data-action="zoom-out" aria-label="Zoom out">−</button>
-            <button type="button" data-action="reset">Reset</button>
+            <button type="button" data-action="reset">Fit to view</button>
             <button type="button" data-action="zoom-in" aria-label="Zoom in">+</button>
             <button type="button" data-action="close" aria-label="Close diagram">×</button>
           </div>
           <div class="mermaid-viewer-canvas"><div class="mermaid-viewer-content"></div></div>
         </div>`;
       document.body.appendChild(modal);
-      viewport = modal.querySelector(".mermaid-viewer-content");
       modal
         .querySelector('[data-action="close"]')
         .addEventListener("click", closeViewer);
@@ -133,75 +159,42 @@
         .addEventListener("click", closeViewer);
       modal
         .querySelector('[data-action="zoom-in"]')
-        .addEventListener("click", () => {
-          scale = Math.min(scale * 1.25, 5);
-          updateTransform();
-        });
+        .addEventListener("click", () => panZoom?.zoomIn());
       modal
         .querySelector('[data-action="zoom-out"]')
-        .addEventListener("click", () => {
-          scale = Math.max(scale / 1.25, 0.25);
-          updateTransform();
-        });
+        .addEventListener("click", () => panZoom?.zoomOut());
       modal
         .querySelector('[data-action="reset"]')
-        .addEventListener("click", () => {
-          scale = 1;
-          offsetX = 0;
-          offsetY = 0;
-          updateTransform();
-        });
-
-      let drag = null;
-      const canvas = modal.querySelector(".mermaid-viewer-canvas");
-      canvas.addEventListener("pointerdown", (event) => {
-        if (event.button !== 0) return;
-        drag = { x: event.clientX - offsetX, y: event.clientY - offsetY };
-        canvas.setPointerCapture(event.pointerId);
-        canvas.classList.add("dragging");
-      });
-      canvas.addEventListener("pointermove", (event) => {
-        if (!drag) return;
-        offsetX = event.clientX - drag.x;
-        offsetY = event.clientY - drag.y;
-        updateTransform();
-      });
-      const stopDragging = () => {
-        drag = null;
-        canvas.classList.remove("dragging");
-      };
-      canvas.addEventListener("pointerup", stopDragging);
-      canvas.addEventListener("pointercancel", stopDragging);
-      canvas.addEventListener(
-        "wheel",
-        (event) => {
-          event.preventDefault();
-          scale = Math.max(
-            0.25,
-            Math.min(5, scale * (event.deltaY < 0 ? 1.1 : 0.9)),
-          );
-          updateTransform();
-        },
-        { passive: false },
-      );
+        .addEventListener("click", resetViewer);
     }
 
-    viewport.innerHTML = diagram.innerHTML;
+    const svgPanZoom = await loadPanZoom();
+    const viewport = modal.querySelector(".mermaid-viewer-content");
+    viewport.replaceChildren(diagram.querySelector("svg").cloneNode(true));
     const svg = viewport.querySelector("svg");
-    if (svg) {
-      svg.removeAttribute("height");
-      svg.style.maxWidth = "none";
-      svg.style.width = `${Number.parseFloat(svg.getAttribute("viewBox")?.split(" ")[2]) || 800}px`;
-    }
-    scale = 1;
-    offsetX = 0;
-    offsetY = 0;
-    updateTransform();
+    svg.removeAttribute("width");
+    svg.removeAttribute("height");
+    svg.removeAttribute("style");
+    svg.setAttribute("width", "100%");
+    svg.setAttribute("height", "100%");
     previousFocus = document.activeElement;
     modal.classList.add("active");
     modal.setAttribute("aria-hidden", "false");
     document.body.classList.add("mermaid-viewer-open");
     modal.querySelector('[data-action="close"]').focus();
+    panZoom?.destroy();
+    panZoom = svgPanZoom(svg, {
+      fit: true,
+      center: true,
+      minZoom: 0.2,
+      maxZoom: 12,
+      zoomScaleSensitivity: 0.2,
+      dblClickZoomEnabled: false,
+      controlIconsEnabled: false,
+      panEnabled: true,
+      zoomEnabled: true,
+    });
+    resetViewer();
   };
 
   window.krRenderMermaid = () =>
@@ -213,12 +206,6 @@
       returnFocusOnClose = false;
       closeViewer();
       window.krRenderMermaid();
-    });
-    document.addEventListener("click", (event) => {
-      const diagram = event.target.closest(
-        "pre.mermaid[data-mermaid-rendered]",
-      );
-      if (diagram) openViewer(diagram);
     });
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape") closeViewer();
@@ -236,10 +223,10 @@
       }
       if (
         (event.key === "Enter" || event.key === " ") &&
-        event.target.matches("pre.mermaid[data-mermaid-rendered]")
+        event.target.matches(".mermaid-expand")
       ) {
         event.preventDefault();
-        openViewer(event.target);
+        openViewer(event.target.parentElement.querySelector("pre.mermaid"));
       }
     });
     document.getElementById("theme-toggle")?.addEventListener("click", () => {

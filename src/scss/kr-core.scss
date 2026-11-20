@@ -7,8 +7,34 @@
 }
 
 .mermaid[data-mermaid-rendered] {
-  cursor: zoom-in;
   white-space: normal;
+}
+
+.mermaid-frame {
+  position: relative;
+}
+
+.mermaid-expand {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 1;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  background: #fffc;
+  color: #333;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+html[data-theme="dark"] .mermaid-expand {
+  border-color: #777;
+  background: #282c34ee;
+  color: #eee;
 }
 
 .mermaid svg {
@@ -84,11 +110,13 @@
 }
 
 .mermaid-viewer-content {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform-origin: center;
+  width: 100%;
+  height: 100%;
   text-align: center;
+
+  > svg {
+    display: block;
+  }
 }
 
 html[data-theme="dark"] .mermaid-viewer-dialog {
