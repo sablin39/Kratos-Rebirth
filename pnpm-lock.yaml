@@ -8,9 +8,6 @@ importers:
 
   .:
     devDependencies:
-      autoprefixer:
-        specifier: ^10.5.4
-        version: 10.5.4(postcss@8.5.25)
       chokidar:
         specifier: ^5.0.0
         version: 5.0.0

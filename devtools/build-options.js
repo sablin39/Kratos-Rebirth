@@ -1,6 +1,5 @@
 const sassPlugin = require("esbuild-plugin-sass");
 const postcss = require("postcss");
-const autoprefixer = require("autoprefixer");
 const postcssPresetEnv = require("postcss-preset-env");
 
 const buildCSSOpts = {
@@ -19,10 +18,10 @@ const buildCSSOpts = {
   plugins: [
     sassPlugin({
       async transform(source, resolveDir) {
-        const { css } = await postcss([
-          autoprefixer,
-          postcssPresetEnv({ stage: 0 }),
-        ]).process(source, { from: undefined });
+        const { css } = await postcss([postcssPresetEnv({ stage: 0 })]).process(
+          source,
+          { from: undefined },
+        );
         return css;
       },
     }),
@@ -45,10 +44,10 @@ const buildHighlightJSCSSOpts = {
   plugins: [
     sassPlugin({
       async transform(source, resolveDir) {
-        const { css } = await postcss([
-          autoprefixer,
-          postcssPresetEnv({ stage: 0 }),
-        ]).process(source, { from: undefined });
+        const { css } = await postcss([postcssPresetEnv({ stage: 0 })]).process(
+          source,
+          { from: undefined },
+        );
         return css;
       },
     }),
@@ -67,10 +66,10 @@ const buildPrismJSCSSOpts = {
   plugins: [
     sassPlugin({
       async transform(source, resolveDir) {
-        const { css } = await postcss([
-          autoprefixer,
-          postcssPresetEnv({ stage: 0 }),
-        ]).process(source, { from: undefined });
+        const { css } = await postcss([postcssPresetEnv({ stage: 0 })]).process(
+          source,
+          { from: undefined },
+        );
         return css;
       },
     }),

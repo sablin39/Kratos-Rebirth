@@ -5,11 +5,12 @@
   "scripts": {
     "build": "node ./devtools/build-once.js",
     "watch": "node ./devtools/build-watch.js",
-    "prepare": "husky"
+    "prepare": "husky",
+    "prepack": "pnpm run build"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Candinya/Kratos-Rebirth.git"
+    "url": "git+https://github.com/sablin39/Kratos-Rebirth.git"
   },
   "keywords": [
     "hexo",
@@ -20,11 +21,10 @@
   "author": "Candinya",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/Candinya/Kratos-Rebirth/issues"
+    "url": "https://github.com/sablin39/Kratos-Rebirth/issues"
   },
-  "homepage": "https://github.com/Candinya/Kratos-Rebirth#readme",
+  "homepage": "https://github.com/sablin39/Kratos-Rebirth#readme",
   "devDependencies": {
-    "autoprefixer": "^10.5.4",
     "chokidar": "^5.0.0",
     "esbuild": "0.26.0",
     "esbuild-plugin-sass": "^1.0.1",
