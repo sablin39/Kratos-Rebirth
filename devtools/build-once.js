@@ -7,6 +7,7 @@ const buildOnce = () => {
   esbuild.build(buildOpts.buildHighlightJSCSSOpts);
   esbuild.build(buildOpts.buildPrismJSCSSOpts);
   esbuild.build(buildOpts.buildJSOpts);
+  esbuild.build(buildOpts.buildMermaidOpts);
 };
 
 buildOnce();

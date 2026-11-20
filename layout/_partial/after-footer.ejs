@@ -17,7 +17,7 @@
 <% } %>
 
 <%- js_theme_cdn('js/kr-core.min.js', {defer: true}) %>
-<%- js_theme_cdn('js/kr-mermaid.min.js', {defer: true}) %>
+<script type="module" src="<%- url_theme_cdn('js/kr-mermaid.min.js') %>"></script>
 
 <% if (theme.pjax) { %>
   <%- js_theme_cdn('js/kr-pjax.min.js', {defer: true}) %>

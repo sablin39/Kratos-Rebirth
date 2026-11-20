@@ -76,13 +76,22 @@ const buildPrismJSCSSOpts = {
   ],
 };
 
+const buildMermaidOpts = {
+  entryPoints: ["src/js/kr-mermaid.js"],
+  outExtension: { ".js": ".min.js" },
+  outdir: "source/js",
+  bundle: true,
+  minify: true,
+  format: "esm",
+  target: "es2020",
+};
+
 const buildJSOpts = {
   entryPoints: [
     "src/js/kr-core.js",
     "src/js/kr-theme.js",
     "src/js/kr-search.js",
     "src/js/kr-pjax.js",
-    "src/js/kr-mermaid.js",
     "src/js/kr-modal/donate.js",
     "src/js/kr-modal/share.js",
   ],
@@ -99,4 +108,5 @@ module.exports = {
   buildHighlightJSCSSOpts,
   buildPrismJSCSSOpts,
   buildJSOpts,
+  buildMermaidOpts,
 };
