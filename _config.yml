@@ -28,6 +28,11 @@ pjax: true
 # 启用文章内图片点击放大功能
 viewerjs: true
 
+# Mermaid 图表（完整发行版，按需加载）
+mermaid:
+  options:
+    securityLevel: "strict"
+
 # 搜索
 search:
   provider: "local" # 搜索提供引擎， local / external / none

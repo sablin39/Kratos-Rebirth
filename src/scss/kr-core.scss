@@ -1,5 +1,25 @@
 ﻿@charset "UTF-8";
 
+.mermaid {
+  overflow-x: auto;
+  text-align: center;
+  white-space: pre-wrap;
+}
+
+.mermaid[data-mermaid-rendered] {
+  white-space: normal;
+}
+
+.mermaid svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.mermaid-error {
+  text-align: left;
+  white-space: pre-wrap;
+}
+
 @-ms-viewport {
   width: device-width;
 }

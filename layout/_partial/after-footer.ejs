@@ -4,6 +4,7 @@
     }
     window.kr.notMobile = (!(navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)));
     window.kr.siteRoot = "<%- url_for('/') %>";
+    window.kr.mermaidOptions = <%- JSON.stringify(theme.mermaid?.options || {}) %>;
 </script>
 
 <% if (theme.pjax || theme.search.provider === "local") { %>
@@ -15,6 +16,7 @@
 <% } %>
 
 <%- js_theme_cdn('js/kr-core.min.js', {defer: true}) %>
+<%- js_theme_cdn('js/kr-mermaid.min.js', {defer: true}) %>
 
 <% if (theme.pjax) { %>
   <%- js_theme_cdn('js/kr-pjax.min.js', {defer: true}) %>
