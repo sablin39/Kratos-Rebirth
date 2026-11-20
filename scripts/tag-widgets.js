@@ -15,12 +15,14 @@ const alertIconMap = {
 const widgets = new Map();
 let nextWidgetId = 0;
 
-const renderWidgetMarkdown = (widget, content) =>
-  hexo.post.render(widget.source, {
+const renderWidgetMarkdown = async (widget, content) => {
+  const result = await hexo.post.render(widget.source, {
     content,
     engine: "markdown",
     markdown: { breaks: false },
   });
+  return result.content;
+};
 
 const renderInlineText = async (widget, text) => {
   if (!text) return "";
