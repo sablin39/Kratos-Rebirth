@@ -5,8 +5,8 @@
   "scripts": {
     "build": "node ./devtools/build-once.js",
     "watch": "node ./devtools/build-watch.js",
-    "prepare": "husky",
-    "prepack": "pnpm run build"
+    "prepare": "node ./devtools/install-hooks.mjs",
+    "prepack": "pnpm install --prod=false --frozen-lockfile && pnpm run build"
   },
   "repository": {
     "type": "git",
