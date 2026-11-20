@@ -215,8 +215,13 @@ ul.kratos-page-meta {
 
 .collapse-box-control {
   background-color: $info_background;
+  color: $text;
 
   .collapse-box-header {
+    color: $text;
+  }
+
+  .collapse-box-content .inner {
     color: $text;
   }
 }

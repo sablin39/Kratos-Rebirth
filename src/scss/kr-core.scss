@@ -7,6 +7,7 @@
 }
 
 .mermaid[data-mermaid-rendered] {
+  cursor: zoom-in;
   white-space: normal;
 }
 
@@ -18,6 +19,96 @@
 .mermaid-error {
   text-align: left;
   white-space: pre-wrap;
+}
+
+.mermaid-viewer-open {
+  overflow: hidden;
+}
+
+.mermaid-viewer {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+
+  &.active {
+    display: block;
+  }
+}
+
+.mermaid-viewer-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+}
+
+.mermaid-viewer-dialog {
+  position: absolute;
+  inset: 4vh 4vw;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
+}
+
+.mermaid-viewer-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+
+  button {
+    min-width: 36px;
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: transparent;
+    color: #333;
+    cursor: pointer;
+  }
+}
+
+.mermaid-viewer-canvas {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+
+  &.dragging {
+    cursor: grabbing;
+  }
+}
+
+.mermaid-viewer-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: center;
+  text-align: center;
+}
+
+html[data-theme="dark"] .mermaid-viewer-dialog {
+  background: #282c34;
+  color: #eee;
+
+  .mermaid-viewer-toolbar {
+    border-color: #3c495b;
+
+    button {
+      border-color: #3c495b;
+      color: #eee;
+    }
+  }
+}
+
+@media (max-width: 767px) {
+  .mermaid-viewer-dialog {
+    inset: 2vh 2vw;
+  }
 }
 
 @-ms-viewport {
