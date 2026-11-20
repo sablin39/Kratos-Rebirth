@@ -6,7 +6,7 @@
     "build": "node ./devtools/build-once.js",
     "watch": "node ./devtools/build-watch.js",
     "prepare": "node ./devtools/install-hooks.mjs",
-    "prepack": "pnpm install --prod=false --frozen-lockfile && pnpm run build"
+    "prepack": "pnpm install --frozen-lockfile --config.production=false && pnpm run build"
   },
   "repository": {
     "type": "git",
