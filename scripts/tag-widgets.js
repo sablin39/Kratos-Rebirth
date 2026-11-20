@@ -12,52 +12,126 @@ const alertIconMap = {
   warning: "warning",
 };
 
-// 提示横幅 // 参数： 0.类型 其余参数为内容
-hexo.extend.tag.register("alertbar", (args) => {
-  const [type, ...text] = args;
-  return `<div class="alert alert-${type}">
-  <div class="icon"><i class="fa fa-${alertIconMap[type]}"></i></div>
-  <div class="text"><p>${text.join(" ")}</p></div>
-  </div>`;
-});
+const widgets = new Map();
+let nextWidgetId = 0;
 
-// 提示面板 // 参数： 0.类型 其余参数为标题 内部内容
+const renderWidgetMarkdown = (widget, content) =>
+  hexo.post.render(widget.source, {
+    content,
+    engine: "markdown",
+    markdown: { breaks: false },
+  });
+
+const renderInlineText = async (widget, text) => {
+  if (!text) return "";
+  const html = (await renderWidgetMarkdown(widget, text)).trim();
+  const paragraph = html.match(/^<p>([\s\S]*)<\/p>$/);
+  return paragraph ? paragraph[1] : html;
+};
+
+const splitType = (args) => {
+  const match = args.match(/^(\S+)(?:\s+([\s\S]*))?$/);
+  return match ? [match[1], match[2] || ""] : ["", ""];
+};
+
+hexo.extend.filter.register(
+  "before_post_render",
+  (data) => {
+    if (typeof data.content !== "string") return;
+    const tagPattern =
+      /{%\s*(alertbar|blur|alertpanel|collapse|endalertpanel|endcollapse)\b([\s\S]*?)%}/g;
+    const blocks = [];
+    let match;
+
+    while ((match = tagPattern.exec(data.content))) {
+      const [source, name, rawArguments] = match;
+      if (name === "alertpanel" || name === "collapse") {
+        blocks.push({
+          name,
+          rawArguments,
+          start: match.index,
+          bodyStart: tagPattern.lastIndex,
+        });
+        continue;
+      }
+      if (name === "endalertpanel" || name === "endcollapse") {
+        const opening = blocks.at(-1);
+        if (!opening || `end${opening.name}` !== name) continue;
+        blocks.pop();
+        const widget = {
+          name: opening.name,
+          arguments: opening.rawArguments.trim(),
+          content: data.content.slice(opening.bodyStart, match.index),
+          source: data.full_source,
+        };
+        const placeholder = `{% kratos_widget ${nextWidgetId} %}`;
+        widgets.set(nextWidgetId++, widget);
+        data.content =
+          data.content.slice(0, opening.start) +
+          placeholder +
+          data.content.slice(tagPattern.lastIndex);
+        tagPattern.lastIndex = opening.start + placeholder.length;
+        continue;
+      }
+
+      widgets.set(nextWidgetId, {
+        name,
+        arguments: rawArguments.trim(),
+        content: "",
+        source: data.full_source,
+      });
+      const placeholder = `{% kratos_widget ${nextWidgetId++} %}`;
+      data.content =
+        data.content.slice(0, match.index) +
+        placeholder +
+        data.content.slice(tagPattern.lastIndex);
+      tagPattern.lastIndex = match.index + placeholder.length;
+    }
+  },
+  8,
+);
+
 hexo.extend.tag.register(
-  "alertpanel",
-  (args, content) => {
-    const [type, ...title] = args;
-    return `<div class="panel panel-${type}">
-    <div class="panel-title"><i class="fa fa-${alertIconMap[type]}"></i>${title.join(" ")}</div>
+  "kratos_widget",
+  async (args) => {
+    const widget = widgets.get(Number(args[0]));
+    if (!widget) return "";
+
+    if (widget.name === "alertbar") {
+      const [type, text] = splitType(widget.arguments);
+      return `<div class="alert alert-${type}">
+  <div class="icon"><i class="fa fa-${alertIconMap[type]}"></i></div>
+  <div class="text">
+  ${await renderWidgetMarkdown(widget, text)}
+  </div>
+  </div>`;
+    }
+
+    if (widget.name === "alertpanel") {
+      const [type, title] = splitType(widget.arguments);
+      return `<div class="panel panel-${type}">
+    <div class="panel-title"><i class="fa fa-${alertIconMap[type]}"></i>${await renderInlineText(widget, title)}</div>
     <div class="panel-body">
-        ${content}
+        ${await renderWidgetMarkdown(widget, widget.content)}
     </div>
     </div>`;
-  },
-  { ends: true },
-);
+    }
 
-// 折叠内容 // 参数： 逗号分隔的标题 可选的 open 状态 内部内容
-hexo.extend.tag.register(
-  "collapse",
-  (args, content) => {
-    const [title, state] = args
-      .join(" ")
-      .split(",")
-      .map((value) => value.trim());
-    return `<div class="collapse-box-control${state === "open" ? " active" : ""}">
-    <div class="collapse-box-header"><div class="collapse-box-icon"><i class="fa fa-plus"></i></div><span>${title}</span></div>
+    if (widget.name === "collapse") {
+      const [title, state] = widget.arguments
+        .split(",")
+        .map((value) => value.trim());
+      return `<div class="collapse-box-control${state === "open" ? " active" : ""}">
+    <div class="collapse-box-header"><div class="collapse-box-icon"><i class="fa fa-plus"></i></div><span>${await renderInlineText(widget, title)}</span></div>
     <div class="collapse-box-content"><div class="inner">
-        ${content}
+        ${await renderWidgetMarkdown(widget, widget.content)}
     </div></div>
     </div>`;
-  },
-  { ends: true },
-);
+    }
 
-// 模糊隐藏 // 参数： 0.内容
-hexo.extend.tag.register(
-  "blur",
-  (args) => `<span class="blur">${args.join(" ")}</span>`,
+    return `<span class="blur">${await renderInlineText(widget, widget.arguments)}</span>`;
+  },
+  { async: true },
 );
 
 // 链接列表 // 参数： 0.排序依据 (order / random) 1.列表的数据ID（使用来自 data files 的数据时必要）
