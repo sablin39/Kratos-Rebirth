@@ -9,7 +9,7 @@
             <% return false; %>
           <% } %>
           <% if (post.title) { %>
-            <a class="list-group-item" href="<%- url_for(post.path) %>"><i class="fa fa-book"></i> <%- post.title %></a>
+            <a class="list-group-item" href="<%- url_for(post.path) %>"><i class="fa fa-book"></i> <%- inline_math_title(post.title) %></a>
             <% limit--; %>
           <% } %>
         <% }) %>

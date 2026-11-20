@@ -32,16 +32,14 @@
                             style: 'none',
                             separator: ' '
                         }) %>
-                    <h2 class="kratos-entry-title"><a href="<%- url_for(post.path) %>" itemprop="mainEntityOfPage"><span itemprop="name headline"><%- post.title %></span></a>
+                    <h2 class="kratos-entry-title"><a href="<%- url_for(post.path) %>" itemprop="mainEntityOfPage"><span itemprop="name headline"><%- inline_math_title(post.title) %></span></a>
                 </header>
                 <div class="kratos-entry-content">
-                    <p itemProp="description">
-                        <% if (post.excerpt) { %>
-                            <%- escape_html(strip_html(post.excerpt.replace(/\<br\s*\/?\>/g, '\n'))).replace(/\r\n?|\n/g, '<br>') %>
-                        <% } else { %>
-                            <%- escape_html(truncate(strip_html(post.content), {length: 120})) %>
-                        <% } %>
-                    </p>
+                    <% if (post.excerpt) { %>
+                        <div itemProp="description"><%- post.excerpt %></div>
+                    <% } else { %>
+                        <p itemProp="description"><%= truncate(strip_html(post.content), {length: 120}) %></p>
+                    <% } %>
                 </div>
             </div>
         </div>

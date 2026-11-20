@@ -3,7 +3,7 @@
     <div class="kratos-hentry kratos-page-inner clearfix">
         <header class="kratos-page-header">
             <% if (page.title) { %>
-                <h1 class="kratos-page-title text-center" itemprop="name headline"><%- page.title %></h1>
+                <h1 class="kratos-page-title text-center" itemprop="name headline"><%- inline_math_title(page.title) %></h1>
             <% } %>
             <ul class="kratos-page-meta text-center">
                 <li><time datetime="<%= date_xml(page.date) %>" itemprop="datePublished"><i class="fa fa-calendar"></i> <%- date(page.date, null) %></time></li>
