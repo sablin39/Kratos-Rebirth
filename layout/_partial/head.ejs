@@ -137,14 +137,19 @@
         background-image: url('<%- theme.image.banner.dark %>');
       }
     <% } %>
-    <% if (theme.image.background) { %>
-      @media(min-width:768px) {
-        body.custom-background {
-          background-image: url('<%- theme.image.background.light %>');
-        }
-        html[data-theme="dark"] body.custom-background {
-          background-image: url('<%- theme.image.background.dark %>');
-        }
+    <% const background = theme.image.background; %>
+    <% if (background?.light || background?.dark) { %>
+      @media (min-width: 768px) {
+        <% if (background.light) { %>
+          html:not([data-theme="dark"]) body.custom-background {
+            background-image: url(<%- JSON.stringify(background.light) %>);
+          }
+        <% } %>
+        <% if (background.dark) { %>
+          html[data-theme="dark"] body.custom-background {
+            background-image: url(<%- JSON.stringify(background.dark) %>);
+          }
+        <% } %>
       }
     <% } %>
     <% if (theme.image.about) { %>
