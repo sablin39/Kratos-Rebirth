@@ -1,4 +1,8 @@
 (() => {
+  const searchNotice = document.getElementById("kr-search-notice");
+  if (!searchNotice) return;
+  const messages = searchNotice.dataset;
+
   const htmlEntityMap = {
     "&": "&amp;",
     "<": "&lt;",
@@ -40,9 +44,8 @@
   };
 
   const setNotice = (type, info) => {
-    const searchInfo = document.getElementById("kr-search-notice");
-    searchInfo.className = "alert alert-" + type;
-    searchInfo.innerText = info;
+    searchNotice.className = "alert alert-" + type;
+    searchNotice.innerText = info;
   };
 
   const clearPosts = () => {
@@ -102,7 +105,7 @@
   const loadDataSearch = (searchDataFile, skeys) => {
     fetch(searchDataFile)
       .then((res) => {
-        setNotice("success", "文件加载完成，开始搜索啦~");
+        setNotice("success", messages.ready);
         if (typeof NProgress !== "undefined") {
           NProgress.inc();
         }
@@ -173,7 +176,9 @@
           if (matched) {
             let tPage = {};
             tPage.title = data.title;
-            tPage.date = new Date(data.date).toLocaleDateString();
+            tPage.date = new Date(data.date).toLocaleDateString(
+              document.documentElement.lang || undefined,
+            );
             tPage.tags = data.tags || [];
             tPage.category = data.categories[0] || [];
             tPage.link = data.url;
@@ -207,18 +212,19 @@
           const finishTime = performance.now();
           setNotice(
             "success",
-            "找到 " +
-              resultCount +
-              " 条搜索结果，用时 " +
-              Math.round((finishTime - startTime) * 100) / 100 +
-              " 毫秒~",
+            messages.results
+              .replaceAll("{count}", resultCount)
+              .replaceAll(
+                "{elapsed}",
+                Math.round((finishTime - startTime) * 100) / 100,
+              ),
           );
           resultArray.sort((a, b) => {
             return b[1] - a[1];
           });
           createPosts(resultArray);
         } else {
-          setNotice("danger", "什么都没有找到欸...");
+          setNotice("danger", messages.empty);
           clearPosts();
         }
         if (typeof NProgress !== "undefined") {
@@ -226,13 +232,16 @@
         }
       })
       .catch((error) => {
-        setNotice("danger", "错误 : " + error);
+        setNotice(
+          "danger",
+          messages.error.replaceAll("{error}", () => String(error)),
+        );
       });
   };
 
   const keySearch = (skeys) => {
     // 设置搜索提示
-    setNotice("info", "正在加载搜索文件...");
+    setNotice("info", messages.loading);
 
     // 启动进度条
     if (typeof NProgress !== "undefined") {

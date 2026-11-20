@@ -5,16 +5,16 @@
             <div class="kr-modal-icon">
                 <i class="fa fa-bitcoin"></i>
             </div>
-            <div class="kr-modal-title"><%- theme.donate.title %></div>
-            <button class="kr-modal-close" onclick="krCloseDonateModal()">
+            <div class="kr-modal-title"><%- theme.donate.title ?? __('donate.title') %></div>
+            <button class="kr-modal-close" aria-label="<%= __('ui.close') %>" onclick="krCloseDonateModal()">
                 <i class="fa fa-times-circle"></i>
             </button>
         </div>
         <div class="kr-modal-body">
-            <div class="kr-donate-message"><%- theme.donate.message %></div>
+            <div class="kr-donate-message"><%- theme.donate.message ?? __('donate.message') %></div>
             <div class="kr-donate-qr" id="kr-donate-qr">
                 <% if (theme.donate.qrcode_placeholder) { %>
-                    <img class="kr-donate-placeholder" src="<%- theme.donate.qrcode_placeholder %>" alt="<%- theme.donate.title %>" />
+                    <img class="kr-donate-placeholder" src="<%- theme.donate.qrcode_placeholder %>" alt="<%= theme.donate.title ?? __('donate.title') %>" />
                 <% } %>
             </div>
             <div class="kr-donate-platforms">

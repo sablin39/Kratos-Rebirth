@@ -7,6 +7,13 @@ import "./kr-polyfill";
  */
 
 (() => {
+  const messages = JSON.parse(document.body.dataset.krMessages);
+
+  const setCopyButtonLabel = (button, icon, label) => {
+    button.innerHTML = `<i class="fa fa-${icon}"></i>&nbsp;`;
+    button.appendChild(document.createTextNode(label));
+  };
+
   const copyCode = (triggerBtn, codeElem) => {
     // 用了 navigator.clipboard API ，不要再用老依赖和写法了
     // https://developer.mozilla.org/en-US/docs/Web/API/Navigator/clipboard
@@ -16,7 +23,7 @@ import "./kr-polyfill";
 
       // 复制成功，庆祝一下
       const origInner = triggerBtn.innerHTML;
-      triggerBtn.innerHTML = `<i class="fa fa-check-circle"></i>&nbsp;成功~`;
+      setCopyButtonLabel(triggerBtn, "check-circle", messages.copied);
       setTimeout(() => {
         triggerBtn.innerHTML = origInner;
       }, 3000);
@@ -134,7 +141,7 @@ import "./kr-polyfill";
 
   let copyrightString;
   const initCopyrightNotice = (kr) => {
-    copyrightString = kr.template
+    copyrightString = (kr.template ?? messages.copyNotice)
       .replaceAll("$NEWLINE", "\n")
       .replaceAll(
         "$AUTHOR",
@@ -163,8 +170,12 @@ import "./kr-polyfill";
     }
   };
 
+  const formatTimeUnit = (unit, count) => {
+    const forms = messages.timeUnits[unit];
+    return forms[count === 1 ? "one" : "other"].replaceAll("{count}", count);
+  };
+
   const getTimeString = (msec, exact = true) => {
-    let tString;
     const sec = msec / 1000;
     const dnum = Math.floor(sec / 60 / 60 / 24);
     const hnum = Math.floor(sec / 60 / 60 - 24 * dnum);
@@ -189,24 +200,15 @@ import "./kr-polyfill";
       if (sstr && sstr.length === 1) {
         sstr = "0" + sstr;
       }
-      tString = dstr + "天" + hstr + "小时" + mstr + "分" + sstr + "秒";
-    } else {
-      // 大概值
-      if (dnum < 540) {
-        // 一年半内
-        if (dnum < 60) {
-          // 两个月内
-          tString = dstr + "天";
-        } else {
-          // 年内月外
-          tString = Math.floor(dnum / 30).toString() + "个月";
-        }
-      } else {
-        // 年外
-        tString = Math.floor(dnum / 365).toString() + "年";
-      }
+      return messages.duration
+        .replaceAll("{days}", dstr)
+        .replaceAll("{hours}", hstr)
+        .replaceAll("{minutes}", mstr)
+        .replaceAll("{seconds}", sstr);
     }
-    return tString;
+    if (dnum < 60) return formatTimeUnit("day", dnum);
+    if (dnum < 540) return formatTimeUnit("month", Math.floor(dnum / 30));
+    return formatTimeUnit("year", Math.floor(dnum / 365));
   };
 
   const initUpTime = (kr) => {
@@ -227,7 +229,7 @@ import "./kr-polyfill";
         .getElementsByClassName("code")[0];
       const copyButton = document.createElement("button");
       copyButton.className = "copy-code";
-      copyButton.innerHTML = `<i class="fa fa-copy"></i>&nbsp;复制`;
+      setCopyButtonLabel(copyButton, "copy", messages.copy);
       copyButton.onclick = copyCode.bind(null, copyButton, codeElem);
       figure.appendChild(copyButton);
     });
@@ -237,7 +239,7 @@ import "./kr-polyfill";
       const codeElem = codeBlock.querySelector("code");
       const copyButton = document.createElement("button");
       copyButton.className = "copy-code";
-      copyButton.innerHTML = `<i class="fa fa-copy"></i>&nbsp;复制`;
+      setCopyButtonLabel(copyButton, "copy", messages.copy);
       copyButton.onclick = copyCode.bind(null, copyButton, codeElem);
       codeBlock.appendChild(copyButton);
     });

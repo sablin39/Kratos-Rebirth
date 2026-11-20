@@ -63,7 +63,7 @@
    */
   const replacePageContent = (data, dom) => {
     // 更新标题
-    document.title = data.title || "无标题";
+    document.title = data.title || document.body.dataset.krUntitled;
 
     // 更新部分元数据
     // 使用部分组件时可能会自动读取这些数据（如LiveRe评论系统）
@@ -178,8 +178,12 @@
       window.dispatchEvent(pjaxEvents.success);
 
       // 使用得到的文档内容创建一个 DOM 对象
-      const newDoc = document.implementation.createHTMLDocument("pjax");
-      newDoc.documentElement.innerHTML = responseText;
+      const newDoc = new DOMParser().parseFromString(responseText, "text/html");
+      if (newDoc.documentElement.lang !== document.documentElement.lang) {
+        NProgress.done();
+        location.href = reqUrl;
+        return;
+      }
 
       // 检查是否有需要的元素（即可被替换的主元素）
       const isSuccessRequest = !!newDoc.getElementById("main");

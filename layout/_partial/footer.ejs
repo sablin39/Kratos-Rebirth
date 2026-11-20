@@ -19,7 +19,7 @@
                     <ul class="kratos-copyright">
                         <div>
                             <li>&copy; <%- date(new Date(), 'YYYY') %> <%- config.title || config.author %> <%- __('footer_components.copyright') %>.</li>
-                            <li><%- theme.footer.components.uptime.text %><span id="kr-since">Loading...</span></li>
+                            <li><%- theme.footer.components.uptime.text ?? __('footer_components.uptime') %><span id="kr-since"><%= __('ui.loading') %></span></li>
                         </div>
                         <div>
                             <li><%- __('footer_components.theme_name', '<a href="https://github.com/Candinya/Kratos-Rebirth" target="_blank">Kratos:Rebirth</a>') %></li>
@@ -50,16 +50,16 @@
                 <% } %>
                 <% if (theme.search.provider !== "none") { %>
                     <div class="box search-box">
-                        <a href="<%- url_for(theme.search.path.page) %>">
+                        <a href="<%- url_for(theme.search.path.page) %>" aria-label="<%= __('title.search') %>">
                             <span class="fa fa-search"></span>
                         </a>
                     </div>
                 <% } %>
-                <div class="box theme-box" id="theme-toggle">
+                <div class="box theme-box" id="theme-toggle" title="<%= __('ui.switch_theme') %>">
                     <span class="fa fa-adjust"></span>
                 </div>
             </div>
-            <div id="gotop-box" class="box gotop-box">
+            <div id="gotop-box" class="box gotop-box" title="<%= __('ui.back_to_top') %>">
                 <span class="fa fa-chevron-up"></span>
             </div>
         </div>

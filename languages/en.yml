@@ -1,0 +1,90 @@
+title:
+  archive: Archives
+  category: Categories
+  tag: Tags
+  tagcloud: Tag cloud
+  search: Search
+  not_found: Page not found
+  status: View status
+  categories_list: Categories
+  post: Posts
+  recent_posts: Recent posts
+  toc: Table of contents
+read_full: Read full post
+comment: Comments
+list_page_count_message:
+  archive: "Total posts: %d"
+  tags: "Total tags: %d"
+  categories: "Total categories: %d"
+page_no: Page %d
+post_next: Newer post
+post_prev: Older post
+post_action:
+  share: Share
+  donate: Donate
+  read_more: Read more
+post_meta:
+  author: By
+  read_count: "%s views"
+  comments_count: "%s comments"
+  category_in: In
+  words: words
+last_update: "Last updated: "
+last_update_alert: This post was last updated %s ago and may be out of date.
+no_title: Untitled
+footer_components:
+  copyright: All rights reserved
+  theme_name: "Theme: %s"
+  site_built_with_love: 'Built with <i class="fa fa-heart" style="color:#d43f57"></i> by %s'
+  uptime: "Online for "
+search:
+  submit: Search
+  notice:
+    welcome: Search the site
+    page: Search %s
+    keywords: "Separate multiple search terms with spaces, for example: %s."
+    tags: Browse by tag
+    loading: Loading the search index…
+    ready: Search index loaded
+    results: "Results: {count} ({elapsed} ms)"
+    empty: No results found.
+    error: "Search failed: {error}"
+not_found:
+  message: Try returning to the homepage.
+  go_back: Go back
+  go_home: Go to homepage
+share:
+  title: Share this post
+  message: Share this with your friends.
+donate:
+  title: Support this site
+  message: Thank you for your support.
+ui:
+  close: Close
+  loading: Loading…
+  reading_progress: Reading progress
+  switch_theme: Switch color theme
+  back_to_top: Back to top
+code:
+  copy: Copy
+  copied: Copied
+duration:
+  exact: "{days}d {hours}h {minutes}m {seconds}s"
+  day:
+    one: "{count} day"
+    other: "{count} days"
+  month:
+    one: "{count} month"
+    other: "{count} months"
+  year:
+    one: "{count} year"
+    other: "{count} years"
+copyright_notice:
+  in_page: 'This work is licensed under <a rel="license nofollow" target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International</a>.'
+  copy: |
+    $NEWLINE
+    -------------------------
+    This content is licensed under CC BY-NC-SA 4.0. Copyright belongs to the author. Contact the author for commercial reuse and credit the source for noncommercial reuse.
+    Author: $AUTHOR
+    Source: $TITLE
+    Link: $LINK

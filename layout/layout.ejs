@@ -1,7 +1,17 @@
 <!DOCTYPE html>
-<html lang="<%= config.language %>">
+<html lang="<%= page.lang %>">
     <%- partial('_partial/head') %>
-    <body class="custom-background">
+    <% const messages = {
+        copy: __('code.copy'),
+        copied: __('code.copied'),
+        duration: __('duration.exact'),
+        timeUnits: Object.fromEntries(['day', 'month', 'year'].map(unit => [
+            unit,
+            { one: __('duration.' + unit + '.one'), other: __('duration.' + unit + '.other') }
+        ])),
+        copyNotice: __('copyright_notice.copy')
+    }; %>
+    <body class="custom-background" data-kr-messages="<%= JSON.stringify(messages) %>" data-kr-untitled="<%= __('no_title') %>">
         <%- partial('_partial/header') %>
 
         <% if (page.type !== "404") { %>
