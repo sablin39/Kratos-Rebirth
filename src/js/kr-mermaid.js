@@ -68,10 +68,17 @@
         diagram.innerHTML = svg;
         diagram.dataset.mermaidRendered = "true";
         diagram.classList.remove("mermaid-error");
-        const wrapper = document.createElement("div");
-        wrapper.className = "mermaid-frame";
-        diagram.replaceWith(wrapper);
-        wrapper.appendChild(diagram);
+        const wrapper = diagram.parentElement.classList.contains(
+          "mermaid-frame",
+        )
+          ? diagram.parentElement
+          : document.createElement("div");
+        if (wrapper !== diagram.parentElement) {
+          wrapper.className = "mermaid-frame";
+          diagram.replaceWith(wrapper);
+          wrapper.appendChild(diagram);
+        }
+        wrapper.querySelector(".mermaid-expand")?.remove();
         const expandButton = document.createElement("button");
         expandButton.type = "button";
         expandButton.className = "mermaid-expand";
