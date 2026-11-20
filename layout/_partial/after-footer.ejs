@@ -5,6 +5,7 @@
     window.kr.notMobile = (!(navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)));
     window.kr.siteRoot = "<%- url_for('/') %>";
     window.kr.mermaidOptions = <%- JSON.stringify(theme.mermaid?.options || {}) %>;
+    window.kr.mermaidZenumlUrl = "<%- url_for('/vendors/mermaid-zenuml@1.0.1/dist/mermaid-zenuml.esm.min.mjs') %>";
 </script>
 
 <% if (theme.pjax || theme.search.provider === "local") { %>

@@ -14,7 +14,16 @@
     window.krMermaidLoading = new Promise((resolve, reject) => {
       const script = document.createElement("script");
       script.src = `${window.kr.siteRoot}vendors/mermaid@11.17.2/dist/mermaid.min.js`;
-      script.onload = () => resolve(window.mermaid);
+      script.onload = async () => {
+        try {
+          const { default: zenuml } = await import(window.kr.mermaidZenumlUrl);
+          await window.mermaid.registerExternalDiagrams([zenuml]);
+          resolve(window.mermaid);
+        } catch (error) {
+          window.krMermaidLoading = null;
+          reject(error);
+        }
+      };
       script.onerror = () => {
         window.krMermaidLoading = null;
         reject(new Error("Unable to load Mermaid"));
