@@ -1,2 +1,5 @@
 allowBuilds:
   esbuild: true
+
+overrides:
+  esbuild-plugin-sass>tmp: 0.2.7
