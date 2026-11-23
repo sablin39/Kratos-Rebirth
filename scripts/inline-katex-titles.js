@@ -1,25 +1,31 @@
-'use strict';
+"use strict";
 
-const { createRequire } = require('node:module');
-const { dirname, join } = require('node:path');
-const { escapeHTML } = require('hexo-util');
+const { createRequire } = require("node:module");
+const { dirname, join } = require("node:path");
+const { escapeHTML } = require("hexo-util");
 
-const katexPath = require.resolve('hexo-filter-katex/package.json');
-const katex = createRequire(join(dirname(katexPath), 'index.js'))('katex');
+let katex;
+try {
+  const katexPath = require.resolve("hexo-filter-katex/package.json");
+  katex = createRequire(join(dirname(katexPath), "index.js"))("katex");
+} catch (error) {
+  if (error.code !== "MODULE_NOT_FOUND") throw error;
+}
 
 function inlineMathTitle(title) {
-  if (typeof title !== 'string' || !title.includes('$')) return escapeHTML(title);
+  if (!katex || typeof title !== "string" || !title.includes("$"))
+    return escapeHTML(title);
 
-  let output = '';
+  let output = "";
   let plainTextStart = 0;
   let position = 0;
 
   while (position < title.length) {
-    if (title[position] === '\\') {
+    if (title[position] === "\\") {
       position += 2;
       continue;
     }
-    if (title[position] !== '$' || title[position + 1] === '$') {
+    if (title[position] !== "$" || title[position + 1] === "$") {
       position++;
       continue;
     }
@@ -28,12 +34,12 @@ function inlineMathTitle(title) {
     let formulaEnd = formulaStart;
     let closingDelimiter = -1;
 
-    while (formulaEnd < title.length && title[formulaEnd] !== '\n') {
-      if (title[formulaEnd] === '\\') {
+    while (formulaEnd < title.length && title[formulaEnd] !== "\n") {
+      if (title[formulaEnd] === "\\") {
         formulaEnd += 2;
         continue;
       }
-      if (title[formulaEnd] === '$') {
+      if (title[formulaEnd] === "$") {
         closingDelimiter = formulaEnd;
         break;
       }
@@ -51,14 +57,15 @@ function inlineMathTitle(title) {
       renderedFormula = katex.renderToString(formula, {
         displayMode: false,
         throwOnError: false,
-        ...hexo.config.katex?.render_options
+        ...hexo.config.katex?.render_options,
       });
     } catch {
       position = closingDelimiter + 1;
       continue;
     }
 
-    output += escapeHTML(title.slice(plainTextStart, position)) + renderedFormula;
+    output +=
+      escapeHTML(title.slice(plainTextStart, position)) + renderedFormula;
     position = closingDelimiter + 1;
     plainTextStart = position;
   }
@@ -66,4 +73,4 @@ function inlineMathTitle(title) {
   return output + escapeHTML(title.slice(plainTextStart));
 }
 
-hexo.extend.helper.register('inline_math_title', inlineMathTitle);
+hexo.extend.helper.register("inline_math_title", inlineMathTitle);

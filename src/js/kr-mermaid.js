@@ -1,4 +1,10 @@
+import { addInlineControls } from "./mermaid-inline-controls.js";
+
 (() => {
+  // PJAX history restores HTML without its listeners. Track rendered nodes in memory.
+  const renderedDiagrams = new WeakSet();
+  const renderingDiagrams = new WeakSet();
+
   const decodeSource = (element) => {
     const bytes = Uint8Array.from(
       atob(element.dataset.mermaidSource),
@@ -54,11 +60,12 @@
     for (const diagram of diagrams) {
       if (
         !diagram.isConnected ||
-        diagram.dataset.mermaidRendered ||
-        diagram.dataset.mermaidRendering
+        renderedDiagrams.has(diagram) ||
+        renderingDiagrams.has(diagram)
       )
         continue;
-      diagram.dataset.mermaidRendering = "true";
+      renderingDiagrams.add(diagram);
+      delete diagram.dataset.mermaidRendered;
       try {
         const { svg, bindFunctions } = await mermaid.render(
           `${diagram.id}-svg`,
@@ -87,12 +94,22 @@
         expandButton.textContent = "⛶";
         expandButton.addEventListener("click", () => openViewer(diagram));
         wrapper.appendChild(expandButton);
+        addInlineControls(diagram);
         bindFunctions?.(diagram);
+        renderedDiagrams.add(diagram);
       } catch (error) {
+        diagram.textContent = decodeSource(diagram);
+        delete diagram.dataset.mermaidRendered;
+        if (diagram.parentElement?.classList.contains("mermaid-frame")) {
+          diagram.parentElement.querySelector(".mermaid-expand")?.remove();
+          diagram.parentElement
+            .querySelector(".mermaid-inline-controls")
+            ?.remove();
+        }
         diagram.classList.add("mermaid-error");
         console.error("Mermaid rendering failed", error);
       } finally {
-        delete diagram.dataset.mermaidRendering;
+        renderingDiagrams.delete(diagram);
       }
     }
   };
@@ -244,6 +261,7 @@
       )) {
         diagram.textContent = decodeSource(diagram);
         delete diagram.dataset.mermaidRendered;
+        renderedDiagrams.delete(diagram);
       }
       window.krRenderMermaid();
     });

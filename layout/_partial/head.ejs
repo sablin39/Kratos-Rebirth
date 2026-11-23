@@ -5,7 +5,8 @@
     <link rel="icon" href="<%- theme.image.favicon %>">
   <% } %>
   <%
-  let title = page.title || __(page.title_i18n);
+  const titleText = typeof page.title_text === "string" && page.title_text.trim();
+  let title = titleText || page.title || __(page.title_i18n);
   if (is_archive()){
     title = __('title.archive');
     if (is_month()){
@@ -63,7 +64,7 @@
       json_ld_data = {
         "@context": "https://schema.org",
         "@type": "BlogPosting",
-        "headline": page.title,
+        "headline": titleText || page.title,
         "description": jsonLdDescription,
         "image": page.cover ? full_url_for(page.path + page.cover) : (theme.image.avatar ? full_url_for(theme.image.avatar) : ""),
         "author": {
