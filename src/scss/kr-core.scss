@@ -1792,6 +1792,37 @@ ul.kratos-page-meta {
     text-align: center;
   }
 
+  .post-figure {
+    margin: 2em 1em;
+    overflow-x: auto;
+
+    img {
+      margin-bottom: 0.5em;
+    }
+
+    figcaption {
+      position: sticky;
+      left: 0;
+      width: fit-content;
+      max-width: 100%;
+      margin: auto;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 767px) {
+      img {
+        min-width: 560px;
+        cursor: zoom-in;
+      }
+    }
+  }
+
+  .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
   .kratos-post-inner-toc {
     display: none !important; // So it won't be overwritten by hbe decrypt func
     border: 2px dashed #ddd;

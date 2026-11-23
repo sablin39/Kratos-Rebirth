@@ -348,7 +348,7 @@ import "./kr-polyfill";
       const images = postEntry[0].querySelectorAll("img[alt]");
       for (const img of images) {
         // 排除掉 linklist 里面的图片
-        if (!img.closest?.(".kr-linklist")) {
+        if (!img.closest?.(".kr-linklist, figure:has(figcaption)")) {
           // 添加标题行
           img.classList.add("with-caption");
           img.insertAdjacentHTML(

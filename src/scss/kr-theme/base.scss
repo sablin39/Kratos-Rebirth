@@ -104,6 +104,10 @@ ul.kratos-page-meta {
 
 .kratos-page-content {
   color: $text;
+
+  .post-figure figcaption {
+    color: $text_alt;
+  }
 }
 
 .kratos-page-inner {
